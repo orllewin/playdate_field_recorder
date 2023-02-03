@@ -1,0 +1,8 @@
+name=Field Recorder
+author=Orllewin
+description=A field recorder
+bundleID=orllewin.playdate.field_recorder
+version=1.0.0
+imagePath=Images/
+pdxversion=11200
+buildtime=728782255
