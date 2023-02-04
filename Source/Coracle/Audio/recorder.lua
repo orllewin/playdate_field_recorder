@@ -35,15 +35,27 @@ function Recorder:changeFormat(format)
 	end
 end
 
+function Recorder:changeFormatFromLabel(label)
+	if label == "8bit mono" then
+		self:changeFormat(playdate.sound.kFormat8bitMono)
+	elseif label == "8bit stereo" then
+		self:changeFormat(playdate.sound.kFormat8bitStereo)
+	elseif label == "16bit mono" then
+		self:changeFormat(playdate.sound.kFormat16bitMono)
+	elseif label ==  "16bit stereo" then
+		self:changeFormat(playdate.sound.kFormat16bitStereo)	
+	end
+end
+
 function Recorder:getFormatLabel()
 	if self.format == playdate.sound.kFormat16bitMono then
-		return "16bit Mono" 
+		return "16bit mono" 
 	elseif self.format == playdate.sound.kFormat16bitStereo then
-		return "16bit Stereo" 
+		return "16bit stereo" 
 	elseif self.format == playdate.sound.kFormat8bitMono then
-		return "8bit Mono" 
+		return "8bit mono" 
 	elseif self.format == playdate.sound.kFormat8bitStereo then
-		return "8bit Stereo"
+		return "8bit stereo"
 	else
 		return "" .. self.format
 	end

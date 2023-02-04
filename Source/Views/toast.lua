@@ -1,10 +1,9 @@
 class('Toast').extends(playdate.graphics.sprite)
 
-function Toast:init(x, y, font)
+function Toast:init(y, font)
 	Toast.super.init(self)
 	
 	self.font = font
-	self.origX = x
 	self.origY = y
 	self.timer = playdate.timer.new(2500, function()
 		self:setVisible(false)
@@ -29,11 +28,11 @@ function Toast:redraw()
 		[playdate.graphics.font.kVariantItalic] = self.font
 	}
 	local width, height = playdate.graphics.getTextSize(self.text, fontFamily)
-	local image = playdate.graphics.image.new(width, height)
+	local image = playdate.graphics.image.new(400, height)
 	playdate.graphics.pushContext(image)
-		self.font:drawText(self.text, 0, 0)
+		self.font:drawText(self.text, 200 - (width/2), 0)
 	playdate.graphics.popContext()
-	self:moveTo(self.origX + width/2, self.origY)
+	self:moveTo(200, self.origY)
 	self:setImage(image)
 	self:setVisible(true)
 	self.timer:start()

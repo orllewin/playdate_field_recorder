@@ -12,9 +12,19 @@ import 'CoreLibs/timer'
 playdate.display.setRefreshRate(20)
 
 --3.5mm jack state: are headphones in, and do they have a mic
-local headphone, mic = playdate.sound.getHeadphoneState(function()
-	local headphone, mic = playdate.sound.getHeadphoneState()
+local headphones, externalMic = playdate.sound.getHeadphoneState(function()
+	local h, m = playdate.sound.getHeadphoneState()
+	headphones = h
+	externalMic = m
 end)
+
+function getMicrophoneLabel()
+	if(externalMic)then
+		return "external mic."
+	else
+		return "internal mic."
+	end
+end
 
 local recordingIndicator = playdate.graphics.image.new("Images/recording_indicator")
 local batteryIcon = playdate.graphics.image.new("Images/battery")
@@ -25,18 +35,21 @@ playdate.graphics.setFont(bigFont)
 
 local smallerFont = playdate.graphics.font.new("Fonts/Roobert-11-Medium")
 
-local timer = TimerView(10, 40)
+local timer = TimerView(10, 43)
 local waveform = Waveform(10, 180, 380, 105)
-local batteryIndicator = BatteryIndicator(348, 124, smallerFont)
-local recordingIndicator = RecordingIndicator(355, 37, smallerFont)
-local formatLabel = Label(10, 117, "16bit Mono", smallerFont)
-local toast = Toast(7, 75, smallerFont)
+local batteryIndicator = BatteryIndicator(348, 25, smallerFont)
+local recordingIndicator = RecordingIndicator(355, 115, smallerFont)
+local formatLabel = Label(10, 85, "16bit mono", smallerFont)
+local micLabel = 		Label(10, 110, getMicrophoneLabel(), smallerFont)
+local toast = Toast(220, smallerFont)
+
+
 
 function levelsListener(audLevel, audMax, audAverage)
 	waveform:updateLevels(audLevel, audMax, audAverage)
 end
 
-function recordingElapsedListener(active, elapsed)
+function recordingListener(active, elapsed)
 	timer:setSeconds(elapsed)
 	recordingIndicator:setActive(active)
 end
@@ -45,17 +58,9 @@ local recorder = Recorder(playdate.sound.kFormat16bitMono)
 recorder:startListening(levelsListener)
 
 local menu = playdate.getSystemMenu()
-menu:addOptionsMenuItem("", {"8bit Mono", "8bit Stereo", "16bit Mono", "16bit Stereo"}, "16bit Mono", function(option)
-	if(recorder:isRecording()) then showToast("Can't change format while recording") end
-	if option == "8bit Mono" then
-		recorder:changeFormat(playdate.sound.kFormat8bitMono)
-	elseif option == "8bit Stereo" then
-		recorder:changeFormat(playdate.sound.kFormat8bitStereo)
-	elseif option == "16bit Mono" then
-		recorder:changeFormat(playdate.sound.kFormat16bitMono)
-	elseif option ==  "16bit Stereo" then
-		recorder:changeFormat(playdate.sound.kFormat16bitStereo)	
-	end
+menu:addOptionsMenuItem("", {"8bit mono", "8bit stereo", "16bit mono", "16bit stereo"}, "16bit mono", function(option)
+	if(recorder:isRecording()) then showToast("Can't change format while recording") return end
+	recorder:changeFormatFromLabel(option)
 	formatLabel:setText(recorder:getFormatLabel())
 end)
 
@@ -66,7 +71,7 @@ function playdate.update()
 end
 
 function playdate.BButtonDown()
-	if(recorder:isNotRecording())then recorder:startRecording(recordingElapsedListener) end
+	if(recorder:isNotRecording())then recorder:startRecording(recordingListener) end
 end
 
 function playdate.AButtonDown()
