@@ -3,7 +3,7 @@ import 'Coracle/string_utils'
 
 class('Recorder').extends()
 
-local MAX_RECORD_TIME = 60 * 2 -- 2 Minutes
+local TWO_MINS = 60 * 2 -- 2 Minutes
 
 function Recorder:init(format)
 	Recorder.super.init(self)
@@ -19,16 +19,19 @@ function Recorder:init(format)
 	self.audScale = 0
 	self.audMax = 0
 	self.recordStart = -1
-	self.recordBuffer = playdate.sound.sample.new(MAX_RECORD_TIME, format)
+	self.recordBuffer = playdate.sound.sample.new(TWO_MINS, format)
 end
 
 function Recorder:changeFormat(format)
 	self.format = format
-	--todo - change times for all formats
-	if(format == playdate.sound.kFormat16bitStereo)then
-		self.recordBuffer = playdate.sound.sample.new(MAX_RECORD_TIME/2, format)
-	else
-		self.recordBuffer = playdate.sound.sample.new(MAX_RECORD_TIME, format)
+	if format == playdate.sound.kFormat16bitStereo then
+		self.recordBuffer = playdate.sound.sample.new(TWO_MINS/2, format)
+	elseif format == playdate.sound.kFormat16bitMono then
+		self.recordBuffer = playdate.sound.sample.new(TWO_MINS, format)
+	elseif format == playdate.sound.kFormat8bitMono then
+		self.recordBuffer = playdate.sound.sample.new(TWO_MINS * 2, format)
+	elseif format == playdate.sound.kFormat8bitStereo then
+		self.recordBuffer = playdate.sound.sample.new(TWO_MINS, format)
 	end
 end
 
@@ -79,6 +82,10 @@ end
 
 function Recorder:isRecording()
 	return self.recording
+end
+
+function Recorder:isNotRecording()
+	return self.recording ~= true
 end
 
 function Recorder:update()

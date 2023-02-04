@@ -5,9 +5,11 @@ import 'Views/waveform'
 import 'Views/timer'
 import 'Views/battery_indicator'
 import 'Views/recording_indicator'
+import 'Views/label'
+import 'Views/toast'
 import 'CoreLibs/timer'
 
-playdate.display.setRefreshRate(25)
+playdate.display.setRefreshRate(20)
 
 if playdate.isSimulator then
 	playdate.sound.setOutputsActive(true, true)
@@ -28,12 +30,8 @@ local timer = TimerView(10, 40)
 local waveform = Waveform(10, 180, 380, 105)
 local batteryIndicator = BatteryIndicator(348, 124, smallerFont)
 local recordingIndicator = RecordingIndicator(355, 37, smallerFont)
-
-local toastMessage = ""
-local showToast = false
-local toastTimer = nil
-local toastYAnchor = 138
-
+local formatLabel = Label(10, 117, "16bit Mono", smallerFont)
+local toast = Toast(7, 75, smallerFont)
 
 function levelsListener(audLevel, audMax, audAverage)
 	waveform:updateLevels(audLevel, audMax, audAverage)
@@ -49,8 +47,7 @@ recorder:startListening(levelsListener)
 
 local menu = playdate.getSystemMenu()
 menu:addOptionsMenuItem("", {"8bit Mono", "8bit Stereo", "16bit Mono", "16bit Stereo"}, "16bit Mono", function(option)
-	print("option .. " .. option)
-	if(recorder:isRecording()) then recorder:stopRecording() end
+	if(recorder:isRecording()) then showToast("Can't change format while recording") end
 	if option == "8bit Mono" then
 		recorder:changeFormat(playdate.sound.kFormat8bitMono)
 	elseif option == "8bit Stereo" then
@@ -60,48 +57,26 @@ menu:addOptionsMenuItem("", {"8bit Mono", "8bit Stereo", "16bit Mono", "16bit St
 	elseif option ==  "16bit Stereo" then
 		recorder:changeFormat(playdate.sound.kFormat16bitStereo)	
 	end
+	formatLabel:setText(recorder:getFormatLabel())
 end)
 
 function playdate.update()
 	recorder:update()
-	playdate.graphics.sprite.update()
-	
-	playdate.graphics.setFont(smallerFont)
-	text(recorder:getFormatLabel(), 10, 105)
-	playdate.graphics.setFont(bigFont)
-	
-	if showToast then
-			playdate.graphics.setFont(smallerFont)
-			text(toastMessage, 7, 63)
-	end
-	
+	playdate.graphics.sprite.update()	
 	playdate.timer.updateTimers()
-	
 end
 
 function playdate.BButtonDown()
-	if(recorder:isRecording())then
-		return--do nothing
-	else
-		recorder:startRecording(recordingElapsedListener)
-	end
+	if(recorder:isNotRecording())then recorder:startRecording(recordingElapsedListener) end
 end
 
 function playdate.AButtonDown()
 	if(recorder:isRecording())then
 		recorder:stopRecording()
-		local filname = recorder:generateFilename()
-		recorder:saveWav(filname)
-		toast("" .. filname .. " saved")
+		local filename = recorder:generateFilename()
+		recorder:saveWav(filename)
+		showToast(filename .. " saved")
 	end
 end
 
-function toast(message)
-	toastMessage = message
-	print("TOAST: " .. message)
-	local function toastCallback()
-			showToast = false
-	end
-	showToast = true
-	toastTimer = playdate.timer.new(2500, toastCallback)
-end
+function showToast(message) toast:setText(message) end
