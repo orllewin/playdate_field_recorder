@@ -24,6 +24,7 @@ end
 
 function Recorder:changeFormat(format)
 	self.format = format
+	--todo - change times for all formats
 	if(format == playdate.sound.kFormat16bitStereo)then
 		self.recordBuffer = playdate.sound.sample.new(MAX_RECORD_TIME/2, format)
 	else
@@ -56,9 +57,9 @@ function Recorder:stopListening()
 	self.listening = false
 end
 
-function Recorder:startRecording(elapsedListener)
+function Recorder:startRecording(recordingListener)
 	assert(self.listening, "You need to start listening before you can record")
-	self.elapsedListener = elapsedListener
+	self.recordingListener = recordingListener
 	
 	local seconds, ms = playdate.getSecondsSinceEpoch()
 	self.recordStart = seconds
@@ -67,6 +68,7 @@ function Recorder:startRecording(elapsedListener)
 	playdate.sound.micinput.recordToSample(self.recordBuffer, function(sample)
 		print("Recording complete...")
 		self.recording = false
+		if self.recordingListener ~= nil then self.recordingListener(false, 0) end
 	end)
 end
 
@@ -94,12 +96,12 @@ function Recorder:update()
 		self.levelsListener(self.audLevel, self.audMax, self.audAverage)
 	end
 	
-	if self.elapsedListener ~= nil then
+	if self.recordingListener ~= nil then
 		if self.recording then
 			local seconds, ms = playdate.getSecondsSinceEpoch()
-			self.elapsedListener(seconds - self.recordStart)
+			self.recordingListener(true, seconds - self.recordStart)
 		else
-			self.elapsedListener(0)
+			self.recordingListener(false, 0)
 		end
 	end
 end

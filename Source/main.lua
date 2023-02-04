@@ -4,6 +4,7 @@ import 'CoreLibs/sprites'
 import 'Views/waveform'
 import 'Views/timer'
 import 'Views/battery_indicator'
+import 'Views/recording_indicator'
 import 'CoreLibs/timer'
 
 playdate.display.setRefreshRate(25)
@@ -26,6 +27,7 @@ local smallerFont = playdate.graphics.font.new("Fonts/Roobert-11-Medium")
 local timer = TimerView(10, 40)
 local waveform = Waveform(10, 180, 380, 105)
 local batteryIndicator = BatteryIndicator(348, 124, smallerFont)
+local recordingIndicator = RecordingIndicator(355, 37, smallerFont)
 
 local toastMessage = ""
 local showToast = false
@@ -37,8 +39,9 @@ function levelsListener(audLevel, audMax, audAverage)
 	waveform:updateLevels(audLevel, audMax, audAverage)
 end
 
-function recordingElapsedListener(elapsed)
+function recordingElapsedListener(active, elapsed)
 	timer:setSeconds(elapsed)
+	recordingIndicator:setActive(active)
 end
 
 local recorder = Recorder(playdate.sound.kFormat16bitMono)
@@ -66,11 +69,6 @@ function playdate.update()
 	playdate.graphics.setFont(smallerFont)
 	text(recorder:getFormatLabel(), 10, 105)
 	playdate.graphics.setFont(bigFont)
-	if(recorder:isRecording())then
-		recordingIndicator:draw(312, 10)
-	else
-		recordingIndicator:drawFaded(312, 10, 0.25, playdate.graphics.image.kDitherTypeDiagonalLine)
-	end
 	
 	if showToast then
 			playdate.graphics.setFont(smallerFont)
