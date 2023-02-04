@@ -2,7 +2,7 @@ import 'Coracle/math'
 
 class('Recorder').extends()
 
-local MAX_RECORD_TIME = 60 * 10 -- 10 Minutes
+local MAX_RECORD_TIME = 60 * 2 -- 2 Minutes
 
 function Recorder:init(format)
 	Recorder.super.init(self)
@@ -23,7 +23,11 @@ end
 
 function Recorder:changeFormat(format)
 	self.format = format
-	self.recordBuffer = playdate.sound.sample.new(MAX_RECORD_TIME, format)
+	if(format == playdate.sound.kFormat16bitStereo)then
+		self.recordBuffer = playdate.sound.sample.new(MAX_RECORD_TIME/2, format)
+	else
+		self.recordBuffer = playdate.sound.sample.new(MAX_RECORD_TIME, format)
+	end
 end
 
 function Recorder:getFormatLabel()
