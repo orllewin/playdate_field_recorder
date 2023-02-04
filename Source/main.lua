@@ -11,11 +11,10 @@ import 'CoreLibs/timer'
 
 playdate.display.setRefreshRate(20)
 
-if playdate.isSimulator then
-	playdate.sound.setOutputsActive(true, true)
-else
-	playdate.sound.setOutputsActive(false, true)
-end
+--3.5mm jack state: are headphones in, and do they have a mic
+local headphone, mic = playdate.sound.getHeadphoneState(function()
+	local headphone, mic = playdate.sound.getHeadphoneState()
+end)
 
 local recordingIndicator = playdate.graphics.image.new("Images/recording_indicator")
 local batteryIcon = playdate.graphics.image.new("Images/battery")
