@@ -1,4 +1,5 @@
 import 'Coracle/math'
+import 'Coracle/string_utils'
 
 class('Recorder').extends()
 
@@ -105,7 +106,7 @@ end
 
 function Recorder:generateFilename()
 	local now = playdate.getTime()
-	local wavFilename = "" .. now["year"] .. "-" .. now["month"] .. "-" .. now["day"] .. "-" .. now["hour"] .. now["minute"] .. now["second"] .. ".wav"
+	local wavFilename = "" .. now["year"] .. "-" .. leftPad(now["month"]) .. "-" .. leftPad(now["day"]) .. "-" .. leftPad(now["hour"]) .. ":" .. leftPad(now["minute"]) .. ":" .. leftPad(now["second"]) .. ".wav"
 	return wavFilename
 end
 

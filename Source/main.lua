@@ -3,6 +3,7 @@ import 'Coracle/Audio/recorder'
 import 'CoreLibs/sprites'
 import 'Views/waveform'
 import 'Views/timer'
+import 'Views/battery_indicator'
 import 'CoreLibs/timer'
 
 playdate.display.setRefreshRate(25)
@@ -24,6 +25,7 @@ local smallerFont = playdate.graphics.font.new("Fonts/Roobert-11-Medium")
 
 local timer = TimerView(10, 40)
 local waveform = Waveform(10, 180, 380, 105)
+local batteryIndicator = BatteryIndicator(348, 124, smallerFont)
 
 local toastMessage = ""
 local showToast = false
@@ -41,6 +43,7 @@ end
 
 local recorder = Recorder(playdate.sound.kFormat16bitMono)
 recorder:startListening(levelsListener)
+
 local menu = playdate.getSystemMenu()
 menu:addOptionsMenuItem("", {"8bit Mono", "8bit Stereo", "16bit Mono", "16bit Stereo"}, "16bit Mono", function(option)
 	print("option .. " .. option)
@@ -62,9 +65,7 @@ function playdate.update()
 	
 	playdate.graphics.setFont(smallerFont)
 	text(recorder:getFormatLabel(), 10, 105)
-	playdate.graphics.drawTextInRect("" .. math.floor(playdate.getBatteryPercentage()) .."%", 0, 105, 390, 30, nil, "...", kTextAlignment.right)
 	playdate.graphics.setFont(bigFont)
-	batteryIcon:draw(309, 106)
 	if(recorder:isRecording())then
 		recordingIndicator:draw(312, 10)
 	else
