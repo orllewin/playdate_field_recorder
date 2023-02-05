@@ -16,6 +16,7 @@ local headphones, externalMic = playdate.sound.getHeadphoneState(function()
 	local h, m = playdate.sound.getHeadphoneState()
 	headphones = h
 	externalMic = m
+	micLabel:setText(getMicrophoneLabel())
 end)
 
 function getMicrophoneLabel()
@@ -40,10 +41,8 @@ local waveform = Waveform(10, 180, 380, 105)
 local batteryIndicator = BatteryIndicator(348, 25, smallerFont)
 local recordingIndicator = RecordingIndicator(355, 115, smallerFont)
 local formatLabel = Label(10, 85, "16bit mono", smallerFont)
-local micLabel = 		Label(10, 110, getMicrophoneLabel(), smallerFont)
+local micLabel = Label(10, 110, getMicrophoneLabel(), smallerFont)
 local toast = Toast(220, smallerFont)
-
-
 
 function levelsListener(audLevel, audMax, audAverage)
 	waveform:updateLevels(audLevel, audMax, audAverage)
