@@ -4,6 +4,11 @@ function Toast:init(y, font)
 	Toast.super.init(self)
 	
 	self.font = font
+	self.fontFamily = {
+		[playdate.graphics.font.kVariantNormal] = self.font,
+		[playdate.graphics.font.kVariantBold] = self.font,
+		[playdate.graphics.font.kVariantItalic] = self.font
+	}
 	self.origY = y
 	self.timer = playdate.timer.new(2500, function()
 		self:setVisible(false)
@@ -22,12 +27,7 @@ function Toast:setText(text)
 end
 
 function Toast:redraw()
-	local fontFamily = {
-		 [playdate.graphics.font.kVariantNormal] = self.font,
-		[playdate.graphics.font.kVariantBold] = self.font,
-		[playdate.graphics.font.kVariantItalic] = self.font
-	}
-	local width, height = playdate.graphics.getTextSize(self.text, fontFamily)
+	local width, height = playdate.graphics.getTextSize(self.text, self.fontFamily)
 	local image = playdate.graphics.image.new(400, height)
 	playdate.graphics.pushContext(image)
 		self.font:drawText(self.text, 200 - (width/2), 0)

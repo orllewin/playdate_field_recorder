@@ -4,6 +4,11 @@ function Label:init(x, y, text, font)
 	Label.super.init(self)
 	
 	self.font = font
+	self.fontFamily = {
+		 [playdate.graphics.font.kVariantNormal] = self.font,
+		[playdate.graphics.font.kVariantBold] = self.font,
+		[playdate.graphics.font.kVariantItalic] = self.font
+	}
 	self.text = text
 	self.origX = x
 	self.origY = y
@@ -18,12 +23,7 @@ function Label:setText(text)
 end
 
 function Label:redraw()
-	local fontFamily = {
-	 	[playdate.graphics.font.kVariantNormal] = self.font,
-		[playdate.graphics.font.kVariantBold] = self.font,
-		[playdate.graphics.font.kVariantItalic] = self.font
-	}
-	local width, height = playdate.graphics.getTextSize(self.text, fontFamily)
+	local width, height = playdate.graphics.getTextSize(self.text, self.fontFamily)
 	local image = playdate.graphics.image.new(width, height)
 	playdate.graphics.pushContext(image)
 		self.font:drawText(self.text, 0, 0)

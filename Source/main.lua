@@ -1,5 +1,5 @@
 import 'Coracle/coracle'
-import 'Coracle/Audio/recorder'
+import 'Audio/recorder'
 import 'CoreLibs/sprites'
 import 'Views/waveform'
 import 'Views/timer'
